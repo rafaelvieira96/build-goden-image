@@ -1,1 +1,185 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Pipeline para criar Golden AMI e atualizar Launch Template
+
+Parameters:
+  BaseAmiId:
+    Type: String
+    Description: AMI base usada para criar a instância de build
+  LaunchTemplateName:
+    Type: String
+    Description: Nome do Launch Template a ser atualizado
+  InstanceType:
+    Type: String
+    Default: t3.medium
+
+Resources:
+  ##################################################
+  # Funções IAM
+  ##################################################
+  InstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref InstanceRole
+
+  BuildLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/AmazonEC2FullAccess
+
+  ##################################################
+  # Instância de Build
+  ##################################################
+  BuildInstance:
+    Type: AWS::EC2::Instance
+    Metadata:
+      AWS::CloudFormation::Init:
+        config:
+          commands:
+            01_update:
+              command: dnf update -y
+            02_java:
+              command: |
+                dnf install -y java-21-amazon-corretto \
+                                 java-17-amazon-corretto \
+                                 java-1.8.0-amazon-corretto
+            03_maven:
+              command: dnf install -y maven
+            04_docker:
+              command: |
+                dnf install -y docker
+                systemctl enable --now docker
+                usermod -aG docker ec2-user || true
+            05_awscli_remove:
+              command: dnf remove -y awscli || true
+            06_awscli_install:
+              command: |
+                cd /tmp
+                curl -sSLo awscliv2.zip https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+                unzip -q awscliv2.zip
+                ./aws/install --update
+            07_k9s:
+              command: |
+                cd /usr/local/bin
+                K9S_VER=$(curl -s https://api.github.com/repos/derailed/k9s/releases/latest | grep tag_name | cut -d'"' -f4)
+                curl -sL https://github.com/derailed/k9s/releases/download/${K9S_VER}/k9s_Linux_amd64.tar.gz -o k9s.tgz
+                tar -xzf k9s.tgz k9s && chmod +x k9s && rm -f k9s.tgz
+            08_azure_agent:
+              command: |
+                echo ">> Placeholder: instalar/configurar Azure DevOps Agent"
+                echo ">> Rodar ./run status para validar"
+    Properties:
+      InstanceType: !Ref InstanceType
+      ImageId: !Ref BaseAmiId
+      IamInstanceProfile: !Ref InstanceProfile
+      SubnetId: subnet-xxxxxxxx           # ajuste
+      SecurityGroupIds:
+        - sg-xxxxxxxx                     # ajuste
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -xe
+          /opt/aws/bin/cfn-init -v \
+            --stack ${AWS::StackName} \
+            --resource BuildInstance \
+            --region ${AWS::Region}
+
+          /opt/aws/bin/cfn-signal -e $? \
+            --stack ${AWS::StackName} \
+            --resource BuildInstance \
+            --region ${AWS::Region}
+
+  ##################################################
+  # Lambda Custom Resource
+  ##################################################
+  BuildLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: index.handler
+      Runtime: python3.12
+      Timeout: 900
+      Role: !GetAtt BuildLambdaRole.Arn
+      Code:
+        ZipFile: |
+          import boto3, time, cfnresponse
+
+          ec2 = boto3.client('ec2')
+
+          def handler(event, context):
+              try:
+                  props = event['ResourceProperties']
+                  instance_id = props['InstanceId']
+                  lt_name = props['LaunchTemplateName']
+                  version_tag = str(int(time.time()))
+
+                  if event['RequestType'] in ('Create', 'Update'):
+                      # Cria AMI
+                      resp = ec2.create_image(
+                          InstanceId=instance_id,
+                          Name=f"golden-{version_tag}",
+                          NoReboot=True
+                      )
+                      ami_id = resp['ImageId']
+
+                      # Espera a AMI ficar disponível
+                      waiter = ec2.get_waiter('image_available')
+                      waiter.wait(ImageIds=[ami_id])
+
+                      # Cria nova versão do Launch Template
+                      lt_resp = ec2.create_launch_template_version(
+                          LaunchTemplateName=lt_name,
+                          SourceVersion='$Latest',
+                          LaunchTemplateData={'ImageId': ami_id}
+                      )
+                      lt_version = lt_resp['LaunchTemplateVersion']['VersionNumber']
+
+                      # Termina instância de build
+                      ec2.terminate_instances(InstanceIds=[instance_id])
+
+                      data = {
+                          'AmiId': ami_id,
+                          'LaunchTemplateVersion': str(lt_version)
+                      }
+                      cfnresponse.send(event, context, cfnresponse.SUCCESS, data)
+                  else:
+                      cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
+              except Exception as e:
+                  print("Erro:", e)
+                  cfnresponse.send(event, context, cfnresponse.FAILED, {})
+
+  BuildCustomResource:
+    Type: Custom::BuildGoldenAMI
+    Properties:
+      ServiceToken: !GetAtt BuildLambda.Arn
+      InstanceId: !Ref BuildInstance
+      LaunchTemplateName: !Ref LaunchTemplateName
+
+Outputs:
+  GoldenAmiId:
+    Description: ID da AMI gerada
+    Value: !GetAtt BuildCustomResource.AmiId
+  LaunchTemplateVersion:
+    Description: Nova versão do Launch Template
+    Value: !GetAtt BuildCustomResource.LaunchTemplateVersion
 
