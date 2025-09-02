@@ -15,8 +15,8 @@ provider "aws" {
 # -------- Variáveis --------
 variable "region"                 { type = string, default = "sa-east-1" }
 variable "launch_template_name"   { type = string, default = "lc-azure-devops-agents" }
-variable "autoscaling_group_name" { type = string } 
-variable "new_ami_id"             { type = string } 
+variable "autoscaling_group_name" { type = string, default = "asg-azure-devops-pre-prod" } 
+variable "new_ami_id"             { type = string, default = "ami-xxxx" } 
 
 # -------- Data sources (leitura dos existentes) --------
 data "aws_launch_template" "lt" {
@@ -48,9 +48,6 @@ resource "aws_autoscaling_group" "this" {
   min_size                  = data.aws_autoscaling_group.asg.min_size
   max_size                  = data.aws_autoscaling_group.asg.max_size
   desired_capacity          = data.aws_autoscaling_group.asg.desired_capacity
-  health_check_type         = data.aws_autoscaling_group.asg.health_check_type
-  health_check_grace_period = data.aws_autoscaling_group.asg.health_check_grace_period
-  vpc_zone_identifier       = data.aws_autoscaling_group.asg.vpc_zone_identifier
 
   # Mantém mesmas tags (propaga = true preserva comportamento)
   dynamic "tag" {
