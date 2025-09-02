@@ -2,35 +2,50 @@ packer {
   required_version = ">= 1.10.0"
   required_plugins {
     amazon = {
-      source  = "github.com/hashicorp/amazon"
+      source = "github.com/hashicorp/amazon"
       version = ">= 1.2.0"
     }
   }
 }
 
-variable "region"        { type = string, default = "sa-east-1" }
-variable "base_ami_id"   { type = string, default = "ami-02556f6726aa38019" }
-variable "instance_type" { type = string, default = "t3.medium" }
-variable "ssh_username"  { type = string, default = "ec2-user" }
+variable "region" {
+  type = string
+  default = "sa-east-1"
+}
+
+variable "base_ami_id" {
+  type = string
+  default = "ami-02556f6726aa38019"
+}
+
+variable "instance_type" {
+  type = string
+  default = "t3.medium"
+}
+
+variable "ssh_username" {
+  type = string
+  default = "ec2-user"
+}
 
 source "amazon-ebs" "golden" {
-  region                  = var.region
-  instance_type           = var.instance_type
-  ssh_username            = var.ssh_username
-  ami_name                = "golden-${formatdate("YYYYMMDDhhmmss", timestamp())}"
-  ami_description         = "Golden AMI via Packer"
-  source_ami              = var.base_ami_id
+  region = var.region
+  instance_type = var.instance_type
+  ssh_username = var.ssh_username
+  ami_name = "golden-${formatdate("YYYYMMDDhhmmss", timestamp())}"
+  ami_description = "Golden AMI via Packer"
+  source_ami = var.base_ami_id
   associate_public_ip_address = false
-  opcional: subnets/sgs se sua VPC exigir
-  subnet_id             = "subnet-05a2d8eb9a5f6dc9a"
-  security_group_id     = "sg-05c41e22780831a07"
+  # opcional: subnets/sgs se sua VPC exigir
+  subnet_id = "subnet-05a2d8eb9a5f6dc9a"
+  security_group_id = "sg-05c41e22780831a07"
 
   launch_block_device_mappings {
     device_name = "/dev/xvda"
     volume_size = 100
     volume_type = "gp3"
     delete_on_termination = true
-    ecrypted = true
+    encrypted = true
   }
 
   tags = {
@@ -41,7 +56,7 @@ source "amazon-ebs" "golden" {
 }
 
 build {
-  name    = "golden-build"
+  name = "golden-build"
   sources = ["source.amazon-ebs.golden"]
 
   provisioner "shell" {
