@@ -60,7 +60,7 @@ build {
   sources = ["source.amazon-ebs.golden"]
 
   provisioner "shell" {
-    script = "./scripts/install.sh"
+    script = "./install.sh"
   }
 
   # gera manifest JSON com o AMI ID (fácil de consumir no passo 2)
