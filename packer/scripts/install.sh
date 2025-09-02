@@ -61,11 +61,12 @@ mkdir -p "$AGENT_DIR"
 cd "$AGENT_DIR"
 
 # Baixa o agente (se ainda não estiver baixado)
+# Baixa o agente (se ainda não estiver baixado)
 if [ ! -f "vsts-agent-linux-x64-*.tar.gz" ]; then
     echo "Baixando o pacote do agente..."
     # A URL do agente pode variar, verifique a mais recente no Azure DevOps
-    curl -o vsts-agent-linux-x64-2.214.1.tar.gz https://vstsagentpackage.azureedge.net/agent/2.214.1/vsts-agent-linux-x64-2.214.1.tar.gz
-    tar zxvf vsts-agent-linux-x64-*.tar.gz
+    wget https://download.agent.dev.azure.com/agent/4.260.0/vsts-agent-linux-x64-4.260.0.tar.gz
+    tar zxvf vsts-agent-linux-x64-4.260.0.tar.gz
 fi
 
 # Executa o script de configuração de forma não interativa
