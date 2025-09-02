@@ -47,9 +47,9 @@ aws --version || true
 # Azure DevOps Agent (placeholder)
 
 # Define as variáveis de configuração
-export AZP_URL="https://dev.azure.com/<sua_organizacao>"
-export AZP_TOKEN="<seu_personal_access_token>"
-export AZP_POOL="<seu_agent_pool>"
+export AZP_URL="SEC_AZP_URL"
+export AZP_TOKEN="SEC_AZP_TOKEN"
+export AZP_POOL="SEC_AZP_POOL"
 export AZP_AGENT_NAME=$(hostname) # Usa o nome do host como nome do agente
 
 # Define o caminho do diretório onde o agente será instalado
