@@ -37,7 +37,7 @@ source "amazon-ebs" "golden" {
   source_ami = var.base_ami_id
   associate_public_ip_address = false
   # opcional: subnets/sgs se sua VPC exigir
-  subnet_id = "subnet-05a2d8eb9a5f6dc9a"
+  subnet_id = "subnet-037fe584d07f3f155"
   security_group_id = "sg-05c41e22780831a07"
 
   launch_block_device_mappings {
