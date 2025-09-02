@@ -9,7 +9,7 @@ packer {
 }
 
 variable "region"        { type = string, default = "sa-east-1" }
-variable "base_ami_id"   { type = string } # informe a AMI base aqui (ex: al2023)
+variable "base_ami_id"   { type = string, default = "ami-02556f6726aa38019" }
 variable "instance_type" { type = string, default = "t3.medium" }
 variable "ssh_username"  { type = string, default = "ec2-user" }
 
@@ -21,18 +21,20 @@ source "amazon-ebs" "golden" {
   ami_description         = "Golden AMI via Packer"
   source_ami              = var.base_ami_id
   associate_public_ip_address = false
-  # opcional: subnets/sgs se sua VPC exigir
-  # subnet_id             = "subnet-xxxx"
-  # security_group_id     = "sg-xxxx"
+  opcional: subnets/sgs se sua VPC exigir
+  subnet_id             = "subnet-05a2d8eb9a5f6dc9a"
+  security_group_id     = "sg-05c41e22780831a07"
 
   launch_block_device_mappings {
     device_name = "/dev/xvda"
-    volume_size = 20
+    volume_size = 100
     volume_type = "gp3"
     delete_on_termination = true
+    ecrypted = true
   }
 
   tags = {
+    Workload = "AzureDevops Agent"
     Purpose = "golden_image_build"
     BuiltBy = "packer"
   }
