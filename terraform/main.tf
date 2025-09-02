@@ -13,10 +13,25 @@ provider "aws" {
 }
 
 # -------- Variáveis --------
-variable "region"                 { type = string, default = "sa-east-1" }
-variable "launch_template_name"   { type = string, default = "lc-azure-devops-agents" }
-variable "autoscaling_group_name" { type = string, default = "asg-azure-devops-pre-prod" } 
-variable "new_ami_id"             { type = string, default = "ami-02f2cb93554aabf1a" } 
+variable "region" {
+  type    = string
+  default = "sa-east-1"
+}
+
+variable "launch_template_name" {
+  type    = string
+  default = "lc-azure-devops-agents"
+}
+
+variable "autoscaling_group_name" {
+  type    = string
+  default = "asg-azure-devops-pre-prod"
+}
+
+variable "new_ami_id" {
+  type    = string
+  default = "ami-02f2cb93554aabf1a"
+}
 
 # -------- Data sources (leitura dos existentes) --------
 data "aws_launch_template" "lt" {
