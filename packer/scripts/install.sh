@@ -50,7 +50,7 @@ aws --version || true
 export AZP_URL="SEC_AZP_URL"
 export AZP_TOKEN="SEC_AZP_TOKEN"
 export AZP_POOL="SEC_AZP_POOL"
-export AZP_AGENT_NAME="portok8s-pipelines" # Usa o nome do host como nome do agente
+export AZP_AGENT_NAME="portok8s-pipelines"
 
 # Define o caminho do diretório onde o agente será instalado
 # Altere para o caminho desejado, se necessário
