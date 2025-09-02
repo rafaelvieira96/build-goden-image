@@ -26,11 +26,11 @@ sudo ./aws/install --update
 aws --version || true
 
 # k9s
-cd /usr/local/bin
-K9S_VER=$(curl -s https://api.github.com/repos/derailed/k9s/releases/latest | grep tag_name | cut -d'"' -f4)
-curl -sL "https://github.com/derailed/k9s/releases/download/${K9S_VER}/k9s_Linux_amd64.tar.gz" -o k9s.tgz
-sudo tar -xzf k9s.tgz k9s && sudo chmod +x k9s && rm -f k9s.tgz
-k9s version || true
+#cd /usr/local/bin
+#K9S_VER=$(curl -s https://api.github.com/repos/derailed/k9s/releases/latest | grep tag_name | cut -d'"' -f4)
+#curl -sL "https://github.com/derailed/k9s/releases/download/${K9S_VER}/k9s_Linux_amd64.tar.gz" -o k9s.tgz
+#sudo tar -xzf k9s.tgz k9s && sudo chmod +x k9s && rm -f k9s.tgz
+#k9s version || true
 
 # Azure DevOps Agent (placeholder)
 echo ">> Placeholder: instalar/configurar Azure DevOps Agent"
