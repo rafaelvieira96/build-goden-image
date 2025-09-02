@@ -5,25 +5,37 @@ set -euo pipefail
 sudo dnf -y update
 
 # Java 21/17/8 (Corretto)
-#sudo dnf -y install java-21-amazon-corretto \
-#                    java-17-amazon-corretto \
-#                    java-1.8.0-amazon-corretto
+sudo yum install java-1.8.0-amazon-corretto -y
+sudo yum install java-17-amazon-corretto -y
+sudo yum install java-21-amazon-corretto -y
+sudo alternatives --set java /usr/lib/jvm/java-1.8.0-amazon-corretto.x86_64/jre/bin/java
 
 # Maven
-#sudo dnf -y install maven
+sudo yum install maven -y
 
-# Docker
-#sudo dnf -y install docker
-#sudo systemctl enable --now docker
-#sudo usermod -aG docker ec2-user || true
+# Docker   
+## https://repost.aws/questions/QU1jeKaTRYQ7WeA7XobfP21g/how-do-i-install-docker-version-27-3-1-on-amazon-linux-2023
+
+# Remove old version
+sudo dnf remove -y docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine
+# Install dnf plugin
+sudo dnf -y install dnf-plugins-core
+# Add CentOS repository
+sudo dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+# Adjust release server version in the path as it will not match with Amazon Linux 2023
+sudo sed -i 's/$releasever/9/g' /etc/yum.repos.d/docker-ce.repo
+# Install as usual
+sudo dnf -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+# Enable the docker service
+sudo systemctl enable --now docker
 
 # AWS CLI v2 (remove antigo e instala mais recente)
-#sudo dnf -y remove awscli || true
-#cd /tmp
-#curl -sSLo awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
-#unzip -q awscliv2.zip
-#sudo ./aws/install --update
-#aws --version || true
+sudo dnf -y remove awscli || true
+cd /tmp
+curl -sSLo awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+unzip -q awscliv2.zip
+sudo ./aws/install --update
+aws --version || true
 
 # k9s
 #cd /usr/local/bin
@@ -33,15 +45,48 @@ sudo dnf -y update
 #k9s version || true
 
 # Azure DevOps Agent (placeholder)
-echo ">> Placeholder: instalar/configurar Azure DevOps Agent"
-# Exemplo (comentei; ajuste conforme seu ambiente):
-# sudo useradd -m -s /bin/bash azagent || true
-# sudo -iu azagent bash -lc '
-#   mkdir -p ~/agent && cd ~/agent
-#   curl -sSLo agent.tar.gz https://vstsagentpackage.azureedge.net/agent/3.240.1/vsts-agent-linux-x64-3.240.1.tar.gz
-#   tar -xzf agent.tar.gz
-#   ./bin/installdependencies.sh
-#   ./config.sh --unattended --url https://dev.azure.com/ORG --auth pat --token XXXXX --pool Default --agent $(hostname) --acceptTeeEula
-#   sudo ./svc.sh install
-#   sudo ./svc.sh start
-# '
+
+# Define as variáveis de configuração
+export AZP_URL="https://dev.azure.com/<sua_organizacao>"
+export AZP_TOKEN="<seu_personal_access_token>"
+export AZP_POOL="<seu_agent_pool>"
+export AZP_AGENT_NAME=$(hostname) # Usa o nome do host como nome do agente
+
+# Define o caminho do diretório onde o agente será instalado
+# Altere para o caminho desejado, se necessário
+AGENT_DIR="/home/ubuntu/azp-agen"
+
+# Cria o diretório e entra nele
+mkdir -p "$AGENT_DIR"
+cd "$AGENT_DIR"
+
+# Baixa o agente (se ainda não estiver baixado)
+if [ ! -f "vsts-agent-linux-x64-*.tar.gz" ]; then
+    echo "Baixando o pacote do agente..."
+    # A URL do agente pode variar, verifique a mais recente no Azure DevOps
+    curl -o vsts-agent-linux-x64-2.214.1.tar.gz https://vstsagentpackage.azureedge.net/agent/2.214.1/vsts-agent-linux-x64-2.214.1.tar.gz
+    tar zxvf vsts-agent-linux-x64-*.tar.gz
+fi
+
+# Executa o script de configuração de forma não interativa
+echo "Configurando o agente..."
+./config.sh \
+--unattended \
+--url "$AZP_URL" \
+--auth pat \
+--token "$AZP_TOKEN" \
+--pool "$AZP_POOL" \
+--agent "$AZP_AGENT_NAME" \
+--acceptTeeEula \
+--work _work
+
+echo "Configuração do agente concluída."
+
+# Instala o agente como um serviço systemd para rodar em background
+echo "Instalando o agente como um serviço..."
+sudo ./svc.sh install
+sudo ./svc.sh start
+
+echo "Serviço do agente iniciado com sucesso."
+
+
