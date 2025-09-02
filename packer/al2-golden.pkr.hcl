@@ -35,7 +35,7 @@ source "amazon-ebs" "golden" {
   ami_name = "golden-${formatdate("YYYYMMDDhhmmss", timestamp())}"
   ami_description = "Golden AMI via Packer"
   source_ami = var.base_ami_id
-  associate_public_ip_address = false
+  associate_public_ip_address = true
   # opcional: subnets/sgs se sua VPC exigir
   subnet_id = "subnet-05a2d8eb9a5f6dc9a"
   security_group_id = "sg-05c41e22780831a07"
