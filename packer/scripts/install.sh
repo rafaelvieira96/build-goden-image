@@ -5,25 +5,25 @@ set -euo pipefail
 sudo dnf -y update
 
 # Java 21/17/8 (Corretto)
-sudo dnf -y install java-21-amazon-corretto \
-                    java-17-amazon-corretto \
-                    java-1.8.0-amazon-corretto
+#sudo dnf -y install java-21-amazon-corretto \
+#                    java-17-amazon-corretto \
+#                    java-1.8.0-amazon-corretto
 
 # Maven
-sudo dnf -y install maven
+#sudo dnf -y install maven
 
 # Docker
-sudo dnf -y install docker
-sudo systemctl enable --now docker
-sudo usermod -aG docker ec2-user || true
+#sudo dnf -y install docker
+#sudo systemctl enable --now docker
+#sudo usermod -aG docker ec2-user || true
 
 # AWS CLI v2 (remove antigo e instala mais recente)
-sudo dnf -y remove awscli || true
-cd /tmp
-curl -sSLo awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
-unzip -q awscliv2.zip
-sudo ./aws/install --update
-aws --version || true
+#sudo dnf -y remove awscli || true
+#cd /tmp
+#curl -sSLo awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+#unzip -q awscliv2.zip
+#sudo ./aws/install --update
+#aws --version || true
 
 # k9s
 #cd /usr/local/bin
