@@ -16,7 +16,7 @@ provider "aws" {
 variable "region"                 { type = string, default = "sa-east-1" }
 variable "launch_template_name"   { type = string, default = "lc-azure-devops-agents" }
 variable "autoscaling_group_name" { type = string, default = "asg-azure-devops-pre-prod" } 
-variable "new_ami_id"             { type = string, default = "ami-xxxx" } 
+variable "new_ami_id"             { type = string, default = "ami-02f2cb93554aabf1a" } 
 
 # -------- Data sources (leitura dos existentes) --------
 data "aws_launch_template" "lt" {
@@ -66,15 +66,15 @@ resource "aws_autoscaling_group" "this" {
   }
 
   # Instance Refresh para aplicar a nova AMI de forma controlada
-  instance_refresh {
-    strategy = "Rolling"
-    preferences {
-      instance_warmup        = 60
-      min_healthy_percentage = 90
-      # opcional: checkpoint_percentages, etc.
-    }
-    triggers = ["launch_template"]
-  }
+  #instance_refresh {
+  #  strategy = "Rolling"
+  #  preferences {
+  #    instance_warmup        = 60
+  #    min_healthy_percentage = 90
+  #    # opcional: checkpoint_percentages, etc.
+  #  }
+  #  triggers = ["launch_template"]
+  #}
 
   # Evita que o Terraform altere campos que você não quer gerenciar agora
   lifecycle {
