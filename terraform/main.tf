@@ -14,9 +14,9 @@ provider "aws" {
 
 # -------- Variáveis --------
 variable "region"                 { type = string, default = "sa-east-1" }
-variable "launch_template_name"   { type = string } # nome do LT existente
-variable "autoscaling_group_name" { type = string } # nome do ASG existente
-variable "new_ami_id"             { type = string } # AMI saída do Packer
+variable "launch_template_name"   { type = string, default = "lc-azure-devops-agents" }
+variable "autoscaling_group_name" { type = string } 
+variable "new_ami_id"             { type = string } 
 
 # -------- Data sources (leitura dos existentes) --------
 data "aws_launch_template" "lt" {
