@@ -40,9 +40,9 @@ Ao ser executado, o script `bootstrap.sh` realizará as seguintes ações:
    
 ```
 curl -s https://api.github.com/repos/derailed/k9s/releases/latest \
-| grep "browser_download_url.*Linux_x86_64.tar.gz" \
-| cut -d '"' -f 4 \
-| xargs curl -LO
+grep "browser_download_url.*Linux_x86_64.tar.gz" \
+cut -d '"' -f 4 \
+xargs curl -LO
 ```
 
 Esse comando baixa o tar.gz mais novo para Linux x86_64.
