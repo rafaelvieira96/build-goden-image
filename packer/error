@@ -1,0 +1,18 @@
+==> golden-build.amazon-ebs.golden: Input 'vsts.agent.PortoBank.AWS-K8S-TEST.ip-10-2-22-144-portoseguro-eks-hml-loc.service' is not an absolute file system path, escaping is likely not going to be reversible.
+==> golden-build.amazon-ebs.golden: Creating launch agent in /etc/systemd/system/vsts.agent.PortoBank.AWS\x2dK8S\x2dTEST.ip\x2d10\x2d2\x2d22\x2d144\x2dportoseguro\x2deks\x2dhml\x2dloc.service
+==> golden-build.amazon-ebs.golden: Run as user: ec2-user
+==> golden-build.amazon-ebs.golden: Run as uid: 1000
+==> golden-build.amazon-ebs.golden: gid: 1000
+==> golden-build.amazon-ebs.golden: /usr/sbin/sestatus
+==> golden-build.amazon-ebs.golden: /usr/sbin/sestatus
+==> golden-build.amazon-ebs.golden: SELinux status:                 enabled
+==> golden-build.amazon-ebs.golden: Created symlink /etc/systemd/system/multi-user.target.wants/vsts.agent.PortoBank.AWS\x2dK8S\x2dTEST.ip\x2d10\x2d2\x2d22\x2d144\x2dportoseguro\x2deks\x2dhml\x2dloc.service → /etc/systemd/system/vsts.agent.PortoBank.AWS\x2dK8S\x2dTEST.ip\x2d10\x2d2\x2d22\x2d144\x2dportoseguro\x2deks\x2dhml\x2dloc.service.
+==> golden-build.amazon-ebs.golden: >>>>>>>>>>>>>>>>>>>>>>> installing kubectl
+==> golden-build.amazon-ebs.golden:   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+==> golden-build.amazon-ebs.golden:                                  Dload  Upload   Total   Spent    Left  Speed
+==> golden-build.amazon-ebs.golden: 100 57.3M  100 57.3M    0     0  10.0M      0  0:00:05  0:00:05 --:--:-- 12.9M
+==> golden-build.amazon-ebs.golden: >>>>>>>>>>>>>>>>>>>>>>> Configurando k9s
+==> golden-build.amazon-ebs.golden:   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+==> golden-build.amazon-ebs.golden:                                  Dload  Upload   Total   Spent    Left  Speed
+==> golden-build.amazon-ebs.golden:   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+==> golden-build.amazon-ebs.golden: 100 36.3M  100 36.3M    0     0   106M      0 --:--:-- --:--:-- --:--:--  106M
