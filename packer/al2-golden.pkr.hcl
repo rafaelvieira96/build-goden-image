@@ -40,6 +40,8 @@ source "amazon-ebs" "golden" {
   subnet_id = "subnet-037fe584d07f3f155"
   security_group_id = "sg-05c41e22780831a07"
 
+  user_data_file = "agent.sh"
+
   launch_block_device_mappings {
     device_name = "/dev/xvda"
     volume_size = 100
