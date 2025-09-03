@@ -1,117 +1,33 @@
-# Golden AMI Pipeline com Packer + Terraform
+# Criação da Golden Image do Azure DevOps Agent
 
-Este projeto implementa um fluxo de **criação e atualização de Golden AMIs** para uso em Auto Scaling Groups (ASG) na AWS, utilizando **Packer** para construir a imagem e **Terraform** para atualizar o Launch Template (LT) e disparar um Instance Refresh.
+-----
 
----
+## Objetivo
 
-## 📦 Estrutura do Projeto
+Este projeto tem como objetivo principal automatizar a criação de uma **Golden Image (AMI)** para os agentes de build do Azure DevOps. A automação é executada de forma autônoma no **CloudShell**, criando uma nova AMI base e, em seguida, atualizando o grupo de autoescalabilidade (Auto Scaling Group) de pré-produção para que os novos agentes possam ser testados nos pipelines.
 
-```
-.
-├── packer/
-│   ├── al2-golden.pkr.hcl   # Template do Packer
-│   └── scripts/
-│       └── install.sh       # Script de instalação de pacotes
-└── terraform/
-    ├── main.tf              # Atualiza Launch Template e ASG
-    ├── variables.tf
-    └── outputs.tf
-```
+## Execução
 
----
+Para rodar a automação, siga os passos abaixo:
 
-## ⚙️ Pré-requisitos
+1.  Abra o **CloudShell**.
+2.  Crie um novo script shell, por exemplo, `run.sh`.
+3.  Copie o conteúdo do **Secrets Manager** do caminho `cloudshell/automation` e cole-o dentro do arquivo `run.sh`.
+4.  Após colar o conteúdo, salve o arquivo e conceda permissão de execução:
+    ```bash
+    chmod +x run.sh
+    ```
+5.  Execute o script com o comando `source`:
+    ```bash
+    source run.sh
+    ```
 
-- [Packer](https://developer.hashicorp.com/packer/install) >= 1.10  
-- [Terraform](https://developer.hashicorp.com/terraform/install) >= 1.6  
-- AWS CLI configurado (`aws configure`) com credenciais válidas  
-- Permissões necessárias:
-  - Criar e registrar AMIs (Packer)
-  - Atualizar Launch Template
-  - Atualizar Auto Scaling Group e iniciar Instance Refresh
+## O que o script faz?
 
----
+Ao ser executado, o script `run.sh` realizará as seguintes ações:
 
-## 🚀 Fluxo Operacional
-
-### 🔹 1. Construção da AMI com Packer
-
-1. Entre na pasta `packer`:
-   ```bash
-   cd packer
-   ```
-
-2. Inicialize os plugins:
-   ```bash
-   packer init .
-   ```
-
-3. Execute o build, informando a AMI base:
-   ```bash
-   packer build -var "base_ami_id=ami-xxxxxxxx" .
-   ```
-
-4. Ao final, o **ID da AMI gerada** é salvo em `manifest.json`:
-   ```bash
-   cat manifest.json | jq -r '.builds[0].artifact_id' | cut -d: -f2
-   ```
-
-   > Exemplo de saída: `ami-0abc123def456ghij`
-
----
-
-### 🔹 2. Atualização do Launch Template e ASG com Terraform
-
-1. Entre na pasta `terraform`:
-   ```bash
-   cd ../terraform
-   ```
-
-2. Inicialize o Terraform:
-   ```bash
-   terraform init
-   ```
-
-3. Crie um arquivo `terraform.tfvars` com os valores:
-   ```hcl
-   region                 = "sa-east-1"
-   launch_template_name   = "meu-lt-existente"
-   autoscaling_group_name = "meu-asg-existente"
-   new_ami_id             = "ami-0abc123def456ghij" # saída do Packer
-   ```
-
-4. Importe o Auto Scaling Group existente:
-   ```bash
-   terraform import 'aws_autoscaling_group.this' meu-asg-existente
-   ```
-
-5. Aplique as mudanças:
-   ```bash
-   terraform apply
-   ```
-
----
-
-## 🔄 O que acontece no Terraform
-
-- Cria uma **nova versão do Launch Template** apontando para a nova AMI.  
-- Atualiza o **ASG** para usar essa nova versão.  
-- Dispara automaticamente um **Instance Refresh** (rolling update), substituindo as instâncias gradualmente.
-
----
-
-## 📌 Notas Importantes
-
-- **Rollback:** basta rodar novamente o `terraform apply` apontando para a versão anterior do Launch Template.  
-- **Azure DevOps Agent:** o `install.sh` contém placeholders; configure conforme sua org/token/pool.  
-- **Limpeza:** Packer gera snapshots associados à AMI. Caso remova AMIs antigas, também apague seus snapshots.  
-- **Multi-Region:** para usar em múltiplas regiões, execute o fluxo separadamente em cada uma ou adapte o Packer para builds multi-region.
-
----
-
-## ✅ Checklist antes de rodar
-
-- [ ] Definiu a **AMI base** no comando do Packer.  
-- [ ] Ajustou **nome do Launch Template** e **ASG** no `terraform.tfvars`.  
-- [ ] Conseguiu capturar o `ami-xxxx` no `manifest.json`.  
-- [ ] Importou o ASG existente para o estado do Terraform.  
+1.  **Instalação do Packer:** O script fará a instalação do **Packer** no CloudShell, que é a ferramenta utilizada para criar a AMI.
+2.  **Download dos scripts:** Fará o download dos scripts de configuração necessários para o agente do Azure DevOps.
+3.  **Modificação dos scripts:** Os scripts de configuração serão modificados para garantir que a AMI seja criada com a configuração desejada para os agentes.
+4.  **Execução do Packer:** O Packer será executado para construir a AMI, seguindo as configurações definidas.
+5.  **Atualização dos recursos AWS:** Após a criação da AMI, o script utilizará a **AWS CLI** para atualizar o `Launch Template` e o `Auto Scaling Group` de pré-produção, garantindo que os novos agentes sejam utilizados nos pipelines de teste.
