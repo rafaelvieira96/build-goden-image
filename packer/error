@@ -16,3 +16,8 @@
 ==> golden-build.amazon-ebs.golden:                                  Dload  Upload   Total   Spent    Left  Speed
 ==> golden-build.amazon-ebs.golden:   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
 ==> golden-build.amazon-ebs.golden: 100 36.3M  100 36.3M    0     0   106M      0 --:--:-- --:--:-- --:--:--  106M
+2025/09/03 22:06:07 packer-plugin-amazon_v1.4.0_x5.0_linux_amd64 plugin: 2025/09/03 22:06:07 [ERROR] Remote command exited with '1': chmod +x /tmp/script_7306.sh; PACKER_BUILDER_TYPE='amazon-ebs' PACKER_BUILD_NAME='golden'  /tmp/script_7306.sh
+2025/09/03 22:06:07 packer-plugin-amazon_v1.4.0_x5.0_linux_amd64 plugin: 2025/09/03 22:06:07 [INFO] RPC endpoint: Communicator ended with: 1
+2025/09/03 22:06:07 [INFO] 222266 bytes written for 'stderr'
+2025/09/03 22:06:07 [INFO] 523236 bytes written for 'stdout'
+2025/09/03 22:06:07 [INFO] RPC client: Communicator ended with: 1
