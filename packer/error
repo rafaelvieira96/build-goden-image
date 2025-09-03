@@ -21,3 +21,29 @@
 2025/09/03 22:06:07 [INFO] 222266 bytes written for 'stderr'
 2025/09/03 22:06:07 [INFO] 523236 bytes written for 'stdout'
 2025/09/03 22:06:07 [INFO] RPC client: Communicator ended with: 1
+
+
+####
+
+
+
+echo ">>>>>>>>>>>>>>>>>>>>>>> installing kubectl"
+
+curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.33.3/2025-08-03/bin/linux/amd64/kubectl
+sudo chmod +x ./kubectl
+mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$HOME/bin:$PATH
+echo 'export PATH=/home/ec2-user/bin:$PATH' >> /home/ec2-user/.bashrc
+
+echo ">>>>>>>>>>>>>>>>>>>>>>> Configurando k9s"
+curl -LO "https://github.com/derailed/k9s/releases/download/v0.50.9/k9s_Linux_amd64.tar.gz"
+tar -xzf k9s_Linux_amd64.tar.gz
+sudo mv k9s /usr/local/bin/
+echo "k9s instalado com sucesso!"
+
+echo ">>>>>>>>>>>>>>>>>>>>>>> Configurando bash-completion para kubectl"
+
+[[ $PS1 && -f /usr/share/bash-completion/bash_completion ]] && . /usr/share/bash-completion/bash_completion
+
+echo 'alias k=kubectl' >> /home/ec2-user/.bashrc
+echo 'complete -o default -F __start_kubectl k' >>/home/ec2-user/.bashrc
+source /home/ec2-user/.bashrc
