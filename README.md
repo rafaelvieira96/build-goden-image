@@ -11,7 +11,7 @@ Este projeto tem como objetivo principal automatizar a criação de uma **Golden
 Para rodar a automação, siga os passos abaixo:
 
 1.  Abra o AWS **CloudShell**. 
-2.  Crie um novo script shell, por exemplo, `run.sh`.
+2.  Crie um novo script shell, por exemplo, `bootstrap.sh`.
 3.  Copie o conteúdo do **Secrets Manager** do caminho `cloudshell/automation` e cole-o dentro do arquivo `run.sh`.
 4.  Após colar o conteúdo, salve o arquivo e conceda permissão de execução:
     ```bash
