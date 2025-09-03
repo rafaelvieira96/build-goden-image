@@ -37,20 +37,26 @@ Ao ser executado, o script `bootstrap.sh` realizará as seguintes ações:
 ## k9s
 
 1. Baixe a versão mais recente do K9s
+   
+```
 curl -s https://api.github.com/repos/derailed/k9s/releases/latest \
 | grep "browser_download_url.*Linux_x86_64.tar.gz" \
 | cut -d '"' -f 4 \
 | xargs curl -LO
-
+```
 
 Esse comando baixa o tar.gz mais novo para Linux x86_64.
 Se estiver em Graviton (ARM64), troque x86_64 por arm64.
 
 2. Extraia e instale
+   
+```
 tar -xzf k9s_Linux_*.tar.gz
 sudo mv k9s /usr/local/bin/
+```
 
 3. Teste
+   
 k9s version
 
 
