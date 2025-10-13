@@ -1,3 +1,5 @@
+https://us06web.zoom.us/j/89726923931?pwd=ncd4dptvmEVc995romcGAdm7eFRwM4.1
+
 # Criação da Golden Image do Azure DevOps Agent - Conta Porto-k8s
 
 -----
