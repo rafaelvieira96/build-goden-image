@@ -1,4 +1,27 @@
-https://us06web.zoom.us/j/89726923931?pwd=ncd4dptvmEVc995romcGAdm7eFRwM4.1
+########################
+
+Ola. Eu tenho o seguinte cenario.
+
+2 contas AWS.
+
+Conta A:
+Possui tabelas dynamoDb para serem exportadas para outra conta.
+Possui um bucket s3 o qual sera o storage que vai receber esses dados , via sync do dynamoDb
+
+
+Conta B:
+Tem a necessidade de importar esses dados da conta, seja criando a tabela dynamo, ou importando os dados para uma tabela criada.
+
+Preciso que a conta B, acesse o bucket na conta A, via IAM role.
+
+Pergunta 1.
+Como criar essa IAM Cross role, de modo a conta B ter permissao de buscar esse dados.
+
+Pergunta 2.
+Qual método devo utilizar para o import.
+Quem deve assumir essa iam-role
+
+########################
 
 # Criação da Golden Image do Azure DevOps Agent - Conta Porto-k8s
 
